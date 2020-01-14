@@ -4,7 +4,7 @@ module DFF (
   input i_rst,
   input i_en,
   input i_d,
-  output reg o_q
+  output reg o_q,
   output reg o_q_not
 );
 
