@@ -1,22 +1,28 @@
+// Module Name: pwm.v
+// Author     : Joshua Conner
+// Description: Creates a single PWM signal
+// Notes      : Change PWM resolution with N parameter and PWM period with
+//              PERIOD_CLK_COUNT
+
 module pwm 
   #(
     parameter N = 8,
     parameter PERIOD_CLK_COUNT = 2000000) //2000000*10ns=20ms
   (
-    input i_clk,
-    input i_rst,
-    input i_en,
-    input [N-1:0] i_dutyCycle,
-    output reg o_pwm);
+    input clkIn,
+    input rstIn,
+    input enIn,
+    input [N-1:0] dutyCycleIn,
+    output reg pwmOut);
 
     integer dutyCycleCnt;
 
-  always @ (posedge i_clk) begin
-    if (i_rst == 1'b1) begin
+  always @ (posedge clkIn) begin
+    if (rstIn == 1'b1) begin
       dutyCycleCnt <= 1'b0;
     end 
     else begin
-      if (i_en == 1'b1) begin
+      if (enIn == 1'b1) begin
         if (dutyCycleCnt < PERIOD_CLK_COUNT-1) begin
           dutyCycleCnt = dutyCycleCnt + 1;
         end
@@ -27,16 +33,16 @@ module pwm
     end
   end
 
-  always @ (posedge i_clk) begin
-    if (i_rst == 1'b1) begin
-      o_pwm <= 1'b0;
+  always @ (posedge clkIn) begin
+    if (rstIn == 1'b1) begin
+      pwmOut <= 1'b0;
     end
     else begin
-      if (i_en == 1'b1) begin
-        o_pwm = (dutyCycleCnt < (i_dutyCycle * (PERIOD_CLK_COUNT >> N))) ? 1'b1 : 1'b0;
+      if (enIn == 1'b1) begin
+        pwmOut = (dutyCycleCnt < (dutyCycleIn * (PERIOD_CLK_COUNT >> N))) ? 1'b1 : 1'b0;
       end
       else begin
-        o_pwm = 1'b0;
+        pwmOut = 1'b0;
       end
     end
   end
